@@ -1,0 +1,43 @@
+schema {
+  query: Query
+}
+
+type Query {
+  users(since: Int!, perPage: Int!, page: Int!): [Users]
+  user(username: String!): User
+}
+
+type User {
+  login: String
+  id: ID
+  nodeId: String
+  avatarUrl: String
+  gravatarId: String
+  htmlUrl: String
+  type: String
+  siteAdmin: Boolean
+  name: String
+  company: String
+  blog: String
+  location: String
+  email: String
+  hireable: Boolean
+  bio: String
+  publicRepos: Int
+  publicGists: Int
+  followers: Int
+  following: Int
+  createdAt: String
+  updatedAt: String
+}
+
+type Users {
+  login: String
+  id: ID
+  nodeId: String
+  avatarUrl: String
+  gravatarId: String
+  htmlUrl: String
+  type: String
+  siteAdmin: Boolean
+}
