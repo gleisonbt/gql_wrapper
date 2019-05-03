@@ -78,54 +78,20 @@ type Users {
 )
 
 
-def get_users(root, info, since, per_page, page):
-    entries = restCall('https://api.github.com/users?since=' + str(since) + "&per_page=" + str(per_page) + "&page=" + str(page))
-    return json2obj(json.dumps(entries))
+def get_users(self, info, since, perPage, page):
+  entries = restCall('https://api.github.com/users?since=' + str(since) + "&per_page=" + str(perPage) + "&page=" + str(page))
+  return json2obj(json.dumps(entries))
 
-# def get_character_type(character, info):
-#         return 'Droid' if character['id'] in droid_data else 'Human'
+def get_user(self, info, username):
+  entry = restCall('https://api.github.com/users/' + str(username))
+  return json2obj(json.dumps(entry))
 
-# def get_Users_type():
-#   pass
 
-# def resolve_user(self, info, username):
-#     entry = restCall('https://api.github.com/users/' + str(username))
-#     return json2obj(json.dumps(entry))
+schema.get_query_type().fields['users'].resolver = get_users
+schema.get_query_type().fields['user'].resolver = get_user
 
 
 
-
-#schema.query_type.fields['users'].resolve = get_users
-#schema.query_type['Users'].resolve = 
-
-
-
-
-# class Query(ObjectType):
-#     users = List(Users, since=Int(required=True), per_page=Int(required=True), page=Int(required=True))
-
-#     def resolve_users(self, info, since, per_page, page):
-#         entries = restCall('https://api.github.com/users?since=' + str(since) + "&per_page=" + str(per_page) + "&page=" + str(page))
-#         return json2obj(json.dumps(entries))
-
-#     user = Field(User, username=String(required=True))
-
-#     def resolve_user(self, info, username):
-#         entry = restCall('https://api.github.com/users/' + str(username))
-#         return json2obj(json.dumps(entry))
-
-    # getListOfPapers = List(Paper, search_query=String(required=True), max_results=Int(required=True), start=Int(required=True),
-    #             sort_by=String(required=False), sort_order=String(required=False))
-    
-    # def resolve_getListOfPapers(self, info, search_query, max_results, start, sort_by, sort_order):
-    #     entries = arxiv.query(search_query=search_query,id_list=[],max_results=max_results, start=start, sort_by=sort_by, sort_order=sort_order)
-    #     return json2obj(json.dumps(entries))
-    
-    # getPaper = Field(Paper, id=ID(required=True))
-
-    # def resolve_getPaper(self, info, id):
-    #     entry = arxiv.query(id_list=[id])
-    #     return json2obj(json.dumps(entry))[0]
 
 # my_schema = Schema(
 #     # query=Query, types=[Paper, TitleDetail, ArxivPrimaryCategory, Tag, AuthorDetail]
