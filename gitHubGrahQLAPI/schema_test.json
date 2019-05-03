@@ -1,0 +1,1 @@
+{"$schema": "http://json-schema.org/schema#", "paths": [], "required": ["users"], "type": "object", "properties": {"users": {"type": "array"}}}

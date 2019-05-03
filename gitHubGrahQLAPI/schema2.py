@@ -4,7 +4,9 @@ import json
 import os
 from collections import namedtuple
 
-from graphql import build_schema
+from graphql import build_ast_schema
+from graphql.language.parser import parse
+
 
 import requests
 
@@ -24,9 +26,16 @@ def _json_object_hook(d):
 def json2obj(data):
     return json.loads(data, object_hook=_json_object_hook)
 
-schema = build_schema(
-    """
-    type Query {
+def parse_schema(document):
+    return build_ast_schema(parse(document))
+
+schema = parse_schema(
+"""
+schema {
+  query: Query
+}
+
+type Query {
   users(since: Int!, perPage: Int!, page: Int!): [Users]
   user(username: String!): User
 }
@@ -35,11 +44,11 @@ type User {
   login: String
   id: ID
   nodeId: String
-  avatarUrl: String
-  gravatarId: String
-  htmlUrl: String
+  avatar_url: String
+  gravatar_id: String
+  html_url: String
   type: String
-  siteAdmin: Boolean
+  site_admin: Boolean
   name: String
   company: String
   blog: String
@@ -47,74 +56,42 @@ type User {
   email: String
   hireable: Boolean
   bio: String
-  publicRepos: Int
-  publicGists: Int
+  public_repos: Int
+  public_gists: Int
   followers: Int
   following: Int
-  createdAt: String
-  updatedAt: String
+  created_at: String
+  updated_at: String
 }
 
 type Users {
   login: String
   id: ID
-  nodeId: String
-  avatarUrl: String
-  gravatarId: String
-  htmlUrl: String
+  node_id: String
+  avatar_url: String
+  gravatar_id: String
+  html_url: String
   type: String
-  siteAdmin: Boolean
+  site_admin: Boolean
 }
-    """
+"""
 )
 
 
-def get_users(root, info, since, per_page, page):
-    entries = restCall('https://api.github.com/users?since=' + str(since) + "&per_page=" + str(per_page) + "&page=" + str(page))
-    return json2obj(json.dumps(entries))
+def get_users(self, info, since, perPage, page):
+  entries = restCall('https://api.github.com/users?since=' + str(since) + "&per_page=" + str(perPage) + "&page=" + str(page))
+  return json2obj(json.dumps(entries))
 
-# def get_character_type(character, info):
-#         return 'Droid' if character['id'] in droid_data else 'Human'
-
-# def get_Users_type():
-#   pass
-
-# def resolve_user(self, info, username):
-#     entry = restCall('https://api.github.com/users/' + str(username))
-#     return json2obj(json.dumps(entry))
+def get_user(self, info, username):
+  entry = restCall('https://api.github.com/users/' + str(username))
+  return json2obj(json.dumps(entry))
 
 
-schema.query_type.fields['users'].resolve = get_users
-#schema.query_type['Users'].resolve = 
+schema.get_query_type().fields['users'].resolver = get_users
+schema.get_query_type().fields['user'].resolver = get_user
 
 
 
-
-# class Query(ObjectType):
-#     users = List(Users, since=Int(required=True), per_page=Int(required=True), page=Int(required=True))
-
-#     def resolve_users(self, info, since, per_page, page):
-#         entries = restCall('https://api.github.com/users?since=' + str(since) + "&per_page=" + str(per_page) + "&page=" + str(page))
-#         return json2obj(json.dumps(entries))
-
-#     user = Field(User, username=String(required=True))
-
-#     def resolve_user(self, info, username):
-#         entry = restCall('https://api.github.com/users/' + str(username))
-#         return json2obj(json.dumps(entry))
-
-    # getListOfPapers = List(Paper, search_query=String(required=True), max_results=Int(required=True), start=Int(required=True),
-    #             sort_by=String(required=False), sort_order=String(required=False))
-    
-    # def resolve_getListOfPapers(self, info, search_query, max_results, start, sort_by, sort_order):
-    #     entries = arxiv.query(search_query=search_query,id_list=[],max_results=max_results, start=start, sort_by=sort_by, sort_order=sort_order)
-    #     return json2obj(json.dumps(entries))
-    
-    # getPaper = Field(Paper, id=ID(required=True))
-
-    # def resolve_getPaper(self, info, id):
-    #     entry = arxiv.query(id_list=[id])
-    #     return json2obj(json.dumps(entry))[0]
 
 # my_schema = Schema(
 #     # query=Query, types=[Paper, TitleDetail, ArxivPrimaryCategory, Tag, AuthorDetail]

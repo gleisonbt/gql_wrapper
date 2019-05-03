@@ -5,7 +5,7 @@ import schema2
 
 
 view_func = GraphQLView.as_view(
-     'graphql', schema=schema2.schema, graphiql=False)
+     'graphql', schema=schema2.schema, graphiql=True)
 
 app = Flask(__name__)
 app.add_url_rule('/graphiql', view_func=view_func)
