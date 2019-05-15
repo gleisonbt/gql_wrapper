@@ -1,5 +1,4 @@
 
-
 import json
 import os
 from collections import namedtuple
@@ -43,42 +42,15 @@ f.close()
 schema = parse_schema(string)
 
 f.close()
-
-
-def  users(self, info, since, per_page, page):
-        entry = restCall('https://api.github.com/users?since= '+ str(since) +' &per_page= '+ str(per_page) +' &page= '+ str(page))
-        return json2obj(json.dumps(entry))
-
-
-def  usersRepos(self, info, username, type, sort, direction):
-        entry = restCall('https://api.github.com/users/'+ str(username) +'/repos?type= '+ str(type) +' &sort= '+ str(sort) +' &direction= '+ str(direction))
-        return json2obj(json.dumps(entry))
-
-schema.get_query_type().fields['users'].resolver = users
+    def  usersRepos(self, info, username, type, sort, direction):
+	entry = restCall('https://api.github.com/users/'+ str(username) +'/repos?type= '+ str(type) +' &sort= '+ str(sort) +' &direction= '+ str(direction))
+	return json2obj(json.dumps(entry))
 schema.get_query_type().fields['usersRepos'].resolver = usersRepos
-
-
-
-# my_schema = Schema(
-#     # query=Query, types=[Paper, TitleDetail, ArxivPrimaryCategory, Tag, AuthorDetail]
-# )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+def  usersStarred(self, info, username, type, sort, direction):
+	entry = restCall('https://api.github.com/users/'+ str(username) +'/starred?type= '+ str(type) +' &sort= '+ str(sort) +' &direction= '+ str(direction))
+	return json2obj(json.dumps(entry))
+schema.get_query_type().fields['usersStarred'].resolver = usersStarred
+def  users(self, info, since, per_page, page):
+	entry = restCall('https://api.github.com/users?since= '+ str(since) +' &per_page= '+ str(per_page) +' &page= '+ str(page))
+	return json2obj(json.dumps(entry))
+schema.get_query_type().fields['users'].resolver = users

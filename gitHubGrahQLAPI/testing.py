@@ -12,21 +12,24 @@ def restCall(query, token=token):
 
 endpoints = [
     {
-        'path':'/users/{username}/repos',
+        'path':'/users/{username:string}/repos',
         'parameters':[{'type':'string'},{'sort':'string'},{'direction':'string'}],
         'example':'https://api.github.com/users/gleisonbt/repos'
-    },
+    }
+    # ,
+    # {
+    #     'path':'/users/{username:string}/starred',
+    #     'parameters':[{'type':'string'},{'sort':'string'},{'direction':'string'}],
+    #     'example':'https://api.github.com/users/gleisonbt/starred'
+    # }
+    ,
     {
-        'path':'/users/{username}/starred',
-        'parameters':[{'type':'string'},{'sort':'string'},{'direction':'string'}],
-        'example':'https://api.github.com/users/gleisonbt/starred'
+        'path':'/users',
+        'parameters':[{'since':'int'},{'per_page':'int'}, {'page':'int'}],
+        'example':'https://api.github.com/users?since=125'
     }
 ]
 
-# [
-#     'https://api.github.com/users/facebook/repos',
-#     'https://api.github.com/users/gleisonbt/starred'
-# ]
 
 def path_variables(endpoint):
     path_variables = []
@@ -66,8 +69,13 @@ def parseTypes(key, value):
         return 'String'
     elif type_class == bool:
         return 'Boolean'
+    elif type_class == float:
+        return 'Float'
     elif type_class == dict:
-        return key[0].upper() + key[1:len(key)]
+        rootType =  key[0].upper() + key[1:len(key)]
+        if rootType in type_list:
+            return rootType + "_" + str(type_list.count(rootType))
+        return rootType
     elif type_class == list:
         return '[' + parseTypes(key, value[0]) + ']'
 
@@ -75,6 +83,7 @@ type_list = []
 
 
 def json2graphql(json, rootType):
+
     schema = ""
     if type(json) == list:
         data = json[0]
@@ -93,8 +102,57 @@ def json2graphql(json, rootType):
             schema = json2graphql(data[key], parseTypes(key, data[key])) + schema
 
     schema = schema + '}' + '\n'
+
+    type_list.append(rootType)
+    
     return schema
    
+
+def convert_types(path_type):
+    if path_type == 'string':
+        return 'String'
+    elif path_type == 'int':
+        return 'Int'
+    elif path_type == 'float':
+        return 'Float'
+    elif path_type == 'bool':
+        return 'Boolean'
+    elif path_type == 'id':
+        return 'ID'
+    else:
+        return 'String'
+
+def generate_query(endpoints):
+    query_type = "type Query {\n"
+    for endpoint in endpoints:
+        query_name = name_root_node(endpoint)
+
+        query_type = query_type + '\t' + query_name + '(' 
+
+        parameters = path_variables(endpoint)
+
+        for parameter in parameters:
+            parameter = parameter.replace('{', '')
+            parameter = parameter.replace('}', '')
+            var_name, type_name = parameter.split(':')
+            query_type = query_type + var_name + ':' + convert_types(type_name) + ", "
+        
+        for parameter in endpoint['parameters']:
+            var_name = list(parameter.keys())[0]
+            type_name = convert_types(parameter[list(parameter.keys())[0]])
+            query_type = query_type + var_name + ':' + type_name + ", "
+
+        if type(restCall(endpoint['example'])) is list:
+            query_type = query_type + '):' + '[' + name_root_node(endpoint) + ']' + '\n'
+        else:
+            query_type = query_type + '):' + name_root_node(endpoint) + '\n'          
+        # + var_name + ':' + ')'
+        
+
+    query_type = query_type +  "}"
+
+
+    return query_type
 
 def generate_schema(endpoints):
     schema = ""
@@ -103,9 +161,16 @@ def generate_schema(endpoints):
         root_node = name_root_node(endpoint)
         schema = schema + json2graphql(data, root_node)
     
+    schema = schema + generate_query(endpoints)
+
+    schema = schema + """
+schema {
+    query: Query
+}"""
+
     return schema
 
 schema = generate_schema(endpoints)
 
-print(schema)
-
+f = open("schema.graphql", "w")
+f.write(schema)
