@@ -1,22 +1,7 @@
 import json
 
-endpoints = [
-    {
-        'path':'/users/{username:string}/repos',
-        'parameters':[{'type':'string'},{'sort':'string'},{'direction':'string'}],
-        'example':'https://api.github.com/users/gleisonbt/repos'
-    },
-    {
-        'path':'/users/{username:string}/starred',
-        'parameters':[{'type':'string'},{'sort':'string'},{'direction':'string'}],
-        'example':'https://api.github.com/users/gleisonbt/starred'
-    },
-    {
-        'path':'/users',
-        'parameters':[{'since':'int'},{'per_page':'int'}, {'page':'int'}],
-        'example':'https://api.github.com/users?since=125'
-    }
-]
+
+endpoints = []
 
 def path_variables(endpoint):
     path_variables = []
@@ -46,9 +31,15 @@ def name_root_node(endpoint):
     return name_root_name
 
 
+function_list = []
 
 def generate_resolver(endpoint):
     function_name = name_root_node(endpoint)
+
+    function_list.append(function_name)
+
+    if function_list.count(function_name) > 1:
+        function_name = function_name + '_' + str(function_list.count(function_name) -1)
 
     path_vars = []
     vars = []
@@ -90,6 +81,8 @@ def generate_resolver(endpoint):
 
     rest = rest[1:len(rest)] 
 
+    if rest[len(rest)-1] == '+':
+        rest = rest[0:len(rest)-1]
 
     resolver_string = resolver_string + " " + function_name + "(self, info, " + params + "):\n"
     resolver_string = resolver_string + "\t" + "entry = restCall(" + rest + ")\n"
@@ -97,8 +90,13 @@ def generate_resolver(endpoint):
 
     return resolver_string
 
+connector_list = []
 def generate_connectors(endpoint):
-    return "schema.get_query_type().fields[\'" + name_root_node(endpoint) + "\'].resolver = " + name_root_node(endpoint)
+    connector_name = name_root_node(endpoint)
+    connector_list.append(connector_name)
+    if connector_list.count(connector_name) > 1:
+        connector_name = connector_name + '_' + str(connector_list.count(connector_name) -1)
+    return "schema.get_query_type().fields[\'" + connector_name + "\'].resolver = " + connector_name
 
 
 
@@ -146,17 +144,35 @@ f.close()
 
 schema = parse_schema(string)
 
-f.close()
-    """
+f.close()\n"""
+
     for endpoint in endpoints:
         code = code + generate_resolver(endpoint)
         code = code + "\n"
         code = code + generate_connectors(endpoint) + "\n"
+    
+    f = open("wrapper.py", "w")
+    f.write(code)
 
-    return code
+    #return code
 
-f = open("code.py", "w")
-f.write(code_generator(endpoints))
+def server_gererator():
+    server = """
+from flask import Flask
+from flask_graphql import GraphQLView
+import os
+import wrapper
 
-#print(code_generator(endpoints))
+
+view_func = GraphQLView.as_view(
+     'graphql', schema=wrapper.schema, graphiql=True)
+
+app = Flask(__name__)
+app.add_url_rule('/graphiql', view_func=view_func)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=os.environ.get('PORT', 5000))"""
+    f = open("server.py", "w")
+    f.write(server)
+
 

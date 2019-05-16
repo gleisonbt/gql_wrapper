@@ -10,25 +10,8 @@ def restCall(query, token=token):
     r = requests.get(query, headers={'Authorization': 'Bearer '+ token})
     return r.json()
 
-endpoints = [
-    {
-        'path':'/users/{username:string}/repos',
-        'parameters':[{'type':'string'},{'sort':'string'},{'direction':'string'}],
-        'example':'https://api.github.com/users/gleisonbt/repos'
-    }
-    # ,
-    # {
-    #     'path':'/users/{username:string}/starred',
-    #     'parameters':[{'type':'string'},{'sort':'string'},{'direction':'string'}],
-    #     'example':'https://api.github.com/users/gleisonbt/starred'
-    # }
-    ,
-    {
-        'path':'/users',
-        'parameters':[{'since':'int'},{'per_page':'int'}, {'page':'int'}],
-        'example':'https://api.github.com/users?since=125'
-    }
-]
+
+endpoints = []
 
 
 def path_variables(endpoint):
@@ -122,10 +105,19 @@ def convert_types(path_type):
     else:
         return 'String'
 
+query_list = []
+
+
 def generate_query(endpoints):
     query_type = "type Query {\n"
     for endpoint in endpoints:
         query_name = name_root_node(endpoint)
+
+        query_list.append(query_name)
+
+        if query_list.count(query_name) > 1:
+            query_name = query_name + '_' + str(type_list.count(query_list) + 1)
+        
 
         query_type = query_type + '\t' + query_name + '(' 
 
@@ -143,10 +135,9 @@ def generate_query(endpoints):
             query_type = query_type + var_name + ':' + type_name + ", "
 
         if type(restCall(endpoint['example'])) is list:
-            query_type = query_type + '):' + '[' + name_root_node(endpoint) + ']' + '\n'
+            query_type = query_type + '):' + '[' + query_name + ']' + '\n'
         else:
-            query_type = query_type + '):' + name_root_node(endpoint) + '\n'          
-        # + var_name + ':' + ')'
+            query_type = query_type + '):' + query_name + '\n'
         
 
     query_type = query_type +  "}"
@@ -168,9 +159,9 @@ schema {
     query: Query
 }"""
 
-    return schema
+    f = open("schema.graphql", "w")
+    f.write(schema)
 
-schema = generate_schema(endpoints)
+    #return schema
 
-f = open("schema.graphql", "w")
-f.write(schema)
+#schema = generate_schema(endpoints)
