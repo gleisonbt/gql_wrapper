@@ -1,0 +1,22 @@
+Program:
+    URL
+    Token
+    paths*=Path
+;
+
+URL:
+    'URL: ' url = /[a-zA-Z0-9_$\/\\\%\&\*\.\!\:]+/
+;
+
+Token:
+    'Token: ' token = /^|[a-zA-Z0-9_$]+/ 
+;
+
+Path:
+    'Path 'name=/[a-zA-Z0-9_]+/':'
+        'rout: ' rout=/(\/([[A-Za-z0-9_]+\:(string|int))|\/[A-Za-z0-9_]+)+/
+        'params: ' params*=/None|([a-zA-Z0-9_]+\:(string|int))/[',']
+        'example: ' example=/(\/[A-Za-z0-9_]+)+/
+        paths*=Path
+    'end'
+;

@@ -84,6 +84,9 @@ def json2graphql(json, rootType):
         if type(data[key]) == dict:
             schema = json2graphql(data[key], parseTypes(key, data[key])) + schema
 
+        if type(data[key]) == list:
+            if type(data[key][0] == dict):
+                schema = json2graphql(data[key][0], parseTypes(key, data[key][0])) + schema
     schema = schema + '}' + '\n'
 
     type_list.append(rootType)

@@ -1,0 +1,12 @@
+dsl EDL [wf] {
+	general {
+		publisher: "Gleison Brito"
+		author: "Gleison Brito"
+		version: "0.0.1"
+    }
+
+	paths {
+		grammar: "/home/gleison/Documents/gql_wrapper/grammar_dsl.tx"
+		coloring: "/home/gleison/Documents/gql_wrapper/colors_ELD.txcl"
+	}
+}

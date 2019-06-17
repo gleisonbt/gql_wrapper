@@ -1,0 +1,53 @@
+
+    digraph textX {
+    fontname = "Bitstream Vera Sans"
+    fontsize = 8
+    node[
+        shape=record,
+        style=filled,
+        fillcolor=aliceblue
+    ]
+    nodesep = 0.3
+    edge[dir=black,arrowtail=empty]
+
+
+38237432[ label="{Program|}"]
+
+38222600[ label="{URL|+url:STRING\l}"]
+
+38374824[ label="{Token|+token:STRING\l}"]
+
+38379768[ label="{Path|+name:STRING\l+rout:STRING\lparam:list[STRING]\l+example:STRING\l}"]
+
+38219656[ label="{ID|}"]
+
+38224600[ label="{STRING|}"]
+
+38229544[ label="{BOOL|}"]
+
+38234488[ label="{INT|}"]
+
+35584200[ label="{FLOAT|}"]
+
+35589144[ label="{STRICTFLOAT|}"]
+
+38258952[ label="{NUMBER|}"]
+
+38263896[ label="{BASETYPE|}"]
+
+38269432[ label="{*OBJECT|}"]
+
+
+
+38237432 -> 38379768[arrowtail=diamond, dir=both, headlabel="paths 0..*"]
+38379768 -> 38379768[arrowtail=diamond, dir=both, headlabel="paths 0..*"]
+38258952 -> 35589144 [dir=back]
+38258952 -> 38234488 [dir=back]
+38263896 -> 38258952 [dir=back]
+38263896 -> 35584200 [dir=back]
+38263896 -> 38229544 [dir=back]
+38263896 -> 38219656 [dir=back]
+38263896 -> 38224600 [dir=back]
+38269432 -> 38263896 [dir=back]
+
+}

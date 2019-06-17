@@ -1,0 +1,20 @@
+
+configuration {
+	default: 
+		keyword = keyword.control;
+		operation = keyword.operator.new;
+}
+
+rules {
+	keyword:
+		Path = entity.name.class;
+		rout = support.variable; 
+		params = support.variable;
+		example = support.variable;
+		URL = support.variable;
+		Token = support.variable;
+
+	operation:
+		Path = emphasis;
+
+}

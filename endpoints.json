@@ -1,5 +1,15 @@
 [
     {
+        "path":"/repos/{owner:string}/{repo:string}/traffic/clones",
+        "parameters":[{"per_page":"int"}, {"per":"string"}],
+        "example":"https://api.github.com/repos/gleisonbt/DeprecatedFinding/traffic/clones"
+    },
+    {
+        "path":"/repos/{owner:string}/{repo:string}/traffic/views",
+        "parameters":[{"per_page":"int"}],
+        "example":"https://api.github.com/repos/gleisonbt/DeprecatedFinding/traffic/views"
+    },
+    {
         "path":"/users/{username:string}/repos",
         "parameters":[{"type":"string"},{"sort":"string"},{"direction":"string"}],
         "example":"https://api.github.com/users/gleisonbt/repos"

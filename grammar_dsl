@@ -1,0 +1,29 @@
+Program:
+    URL
+    Token
+    paths*=Path
+
+URL:
+    'URL '[a-zA-Z0-9_$\/\\\%\&\*\.\!]+
+
+Token:
+    ''|'Token '[a-zA-Z0-9_$\/\\\%\&\*\.\!]+ 
+
+Path:
+    'Path' namePath ':'
+        Rout
+        Params
+        Example
+        paths*=Path
+
+namePath:
+    name=[a-zA-Z0-9_]+
+
+Rout:
+    'rout: '(\/(\{[[A-Za-z0-9_]+\:(string|int)\})|\/[A-Za-z0-9_]+)+
+
+Params:
+    'params: '\[\]|\[([a-zA-Z0-1_]+\:(string|int))(\,[a-zA-Z0-1_]+\:(string|int))*\]
+Example:
+    example=(\/[A-Za-z0-9_]+)+((\?[A-Za-z0-9_]+\={1}+([A-Za-z0-9])+)(\&[A-Za-z0-9_]+\=+(\w)+)*){0,1}
+

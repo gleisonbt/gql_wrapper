@@ -1,0 +1,60 @@
+Program:
+    URL
+    Token
+    paths*=Path
+;
+
+URL:
+    url = 'URL: '/[a-zA-Z0-9_$\/\\\%\&\*\.\!\:]+/
+;
+
+Token:
+    token = 'Token: '/^|[a-zA-Z0-9_$]+/ 
+;
+
+Path:
+    'Path 'namePath':'
+        Rout
+        Params
+        Example
+        paths*=Path
+;
+
+namePath:
+    name=/[a-zA-Z0-9_]+/
+;
+
+Rout:
+    rout = 'rout: '/(\/([[A-Za-z0-9_]+\:(string|int))|\/[A-Za-z0-9_]+)+/
+;
+
+Params:
+    params = 'params: 'param*=/None|([a-zA-Z0-9_]+\:(string|int))/[',']
+;
+
+
+Example:
+    example='example: '/(\/[A-Za-z0-9_]+)+/
+;
+
+
+
+######################
+URL: https://api.github.com
+Token: dsfsdfs
+Path Users:
+    rout: /users
+    params: since:int
+    example: /users
+    Path getUser:
+        rout: /username:string
+        params: None
+        example: /users/gleisonbt
+        Path userRouts:
+            rout: /repos
+            params: sort:string, order:string, page:int, per_page:int
+            example: /users/gleisonbt/repos
+Path Repos:
+    rout: /repos
+    params: owner:string, repo:string
+    example: /repos/gleisonbt/gitsuggest

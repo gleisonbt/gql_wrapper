@@ -1,0 +1,22 @@
+URL: "https://api.github.com"
+token: "xxxxxxxxxxxx"
+
+Path Users:
+    rout: /users
+    params: [since:int]
+    example: /users?since=123
+
+    Path getUser:
+        rout: /username:string
+        params: []
+        example: /users/gleisonbt
+    
+        Path userRouts:
+            rout: /repos
+            params: sort:string, order:string, page:int, per_page:int
+Path Repos:
+    rout: /repos
+    params: []
+    rout: /repos
+    example: /repos/gleisonbt/gitsuggest
+            
